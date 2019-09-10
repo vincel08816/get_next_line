@@ -1,47 +1,85 @@
 #include "header.h"
 
-int		get_next_line(const int fd, char **line)
+/*
+**	this program
+*/
+
+typedef struct
 {
-	static char	*fds[65535];		//this is a potential failure
+	char	*s;
+	node	*next;
+}			node;
+
+//allocate for list
+static node	*createlst(node *ptr)
+{
+	if (!ptr)
+		if (!(ptr = (node *)malloc(sizeof(node))))
+			return (NULL);
+	return (ptr);
+}
+
+// converting string to list
+static void	strtolist(char *tmp, node *ptr)
+{
+	size_t	i;
+	char	*start;
+	node	*new;
+
+	start = tmp;
+	ptr = createlst(ptr);
+	while (*tmp)
+	{
+		i = strichr(tmp, '\n');
+		ptr->s = ft_strsub(tmp, 0, i - 1);
+		(i + 1 <= strlen(tmp)) ? tmp += i + 1 : 0;
+		new = createlst(new);
+		ptr->next = new;
+		new = NULL;
+	}
+	free(start);	//hopefully this will free it
+}
+
+//this should dequeue
+static node	*dequeue(char **line, node *head)
+{
+	node *ptr;
+
+	ptr = head->next;
+	*line = head->s;
+	free(head);
+	return (ptr);
+}
+
+int		get_next_line(int fd, char **line)
+{
+	static node *heads[MAX_FD];
 	char		buff[BUFF_SIZE];
-	char		*tmp;				//second point of allocation
+	char		*tmp;
 	size_t		size;
-	size_t		sc;
-
-	if (fd < 0 || fd > 65535 || !line || (read(fd, 0, 0) < 0))
+	
+	if (fd < 0 || fd > MAXFD || !line || (read(fd, 0, 0) < 0))
 		return (-1);
-	size = 0;
-	sc = 0;
-
-	//allocating memory and setting end to null (strnew)
 	if (!(tmp = (char *)malloc(sizeof(char) * (1))))
 		return (-1);
-	bzero(tmp, 1);
-	if (fds[fd])
+	ft_bzero(tmp, 1);
+	if (!heads[fd])
 	{
-		printf("%s", fds[fd]);
-		tmp = ft_combine(tmp, fds[fd]);
-		free(fds[fd]);
+		//taking the whole string.
+		while ((size = read(fd, buff, BUFF_SIZE)) > 0)
+		{
+			buff[size] = '\0';
+			tmp = ft_combine(tmp, buff);
+			ft_bzero(buff, BUFF_SIZE);
+			if (size == 0)
+				break;
+		}
+	//function to separate into linked list
+		strtolist(tmp, heads[65353]);
+		dequeue(line, heads[fd]);
 	}
-	//read until 
-	while ((size = read(fd, buff, BUFF_SIZE)) > 0)
-	{
-		//printf("%zu", size);
-		buff[size] = '\0';
-		// break when strchr does not point to the end of the string
-		if (strichr(buff, '\0') != strichr(buff, '\n'))
-			break;
-		tmp = ft_combine(tmp, buff);
-	}
-	(strichr(buff, '\0') > strichr(buff, '\n')) ? sc = strichr(buff, '\n') : \
-	(sc = strichr(buff, '\0'));
-	fds[fd] = strdup(&buff[sc + 1]);
-	//printf("%zu", sc);
-	tmp = char_remalloc(tmp, strlen(tmp) + sc);
-	tmp = strncat(tmp, buff, sc);
-	*line = tmp;
-	strichr(buff, '\0') < strichr(buff, '\n') ? ft_strdel(&fds[fd]) : 0;
-	return (strichr(buff, '\0') > strichr(buff, '\n') ? 1 : 0);
+	heads[fd] = dequeue(line, heads[fd]);
+	return (heads[fd]->next == NULL ? 0 : 1);
 }
 
 int main(int argc, char **argv)
@@ -50,12 +88,10 @@ int main(int argc, char **argv)
     int fd;
 
     fd = open(argv[1], O_RDONLY);
-    while ((get_next_line(fd, &line) > 0))
+    if ((get_next_line(fd, &line) > 0))
     {
         printf("%s\n", line);
         free(line);
-		//ft_strdel(&line);
     }
-	//free(line);
-    return (0);
+    return (1);
 }
