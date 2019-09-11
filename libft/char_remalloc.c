@@ -25,7 +25,7 @@ char	*char_remalloc(char *s, size_t n)
 		return (ft_strdup(""));
 	ptr = ft_strnew(n);
 	ft_bzero(ptr, n + 1);
-	ptr = strncat(ptr, s, n);
-	free(&s);
+	ptr = ft_strncat(ptr, s, n);
+	free(s);
 	return (ptr);
 }

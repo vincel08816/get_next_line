@@ -1,40 +1,40 @@
 #include "header.h"
 
 /*
-**	this program
+**	This function should return 3 things
+**		1.)	if '\n', return 1
+**		2.) if EOF, return 0
+**		3.) if error, return -1
 */
-
-typedef struct
-{
-	char	*s;
-	node	*next;
-}			node;
 
 //allocate for list
 static node	*createlst(node *ptr)
 {
-	if (!ptr)
-		if (!(ptr = (node *)malloc(sizeof(node))))
-			return (NULL);
+	if(!(ptr = (node*)malloc(sizeof(node))))
+		return (NULL);
+	ptr->next = NULL;
 	return (ptr);
 }
 
 // converting string to list
-static void	strtolist(char *tmp, node *ptr)
+static void	strtolist(char *tmp, node *head)
 {
 	size_t	i;
 	char	*start;
 	node	*new;
+	node	*now;
 
 	start = tmp;
-	ptr = createlst(ptr);
+	head = createlst(head);
+	now = head;
 	while (*tmp)
 	{
 		i = strichr(tmp, '\n');
-		ptr->s = ft_strsub(tmp, 0, i - 1);
+		now->s = ft_strsub(tmp, 0, i);
 		(i + 1 <= strlen(tmp)) ? tmp += i + 1 : 0;
 		new = createlst(new);
-		ptr->next = new;
+		now->next = new;
+		now = now->next;
 		new = NULL;
 	}
 	free(start);	//hopefully this will free it
@@ -45,12 +45,32 @@ static node	*dequeue(char **line, node *head)
 {
 	node *ptr;
 
+	ptr = NULL;
 	ptr = head->next;
 	*line = head->s;
 	free(head);
 	return (ptr);
 }
 
+int		main(void)
+{
+	char	*test_string = ft_strdup("asdn\nlkj\nasd;lfkja;l\n\nskdjf\n");
+	node	*ptr;
+
+	ptr = NULL;
+	//printf("test_string: %s", test_string);
+	strtolist(test_string, ptr);
+
+	while (ptr)
+	{
+		printf("\n\n\n*********************************\n");
+		printf("%s\n", ptr->s);
+		ptr = ptr->next;
+		printf("*********************************\n");
+	}
+	return (0);
+}
+/*
 int		get_next_line(int fd, char **line)
 {
 	static node *heads[MAX_FD];
@@ -95,3 +115,4 @@ int main(int argc, char **argv)
     }
     return (1);
 }
+*/
