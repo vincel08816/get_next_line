@@ -1,4 +1,4 @@
-#include "header.h"
+#include "get_next_line.h"
 
 /*
 **	This function should return 3 things
@@ -20,7 +20,7 @@ static node	*createlst(node *ptr)
 **	converting string to list
 **	frees string after the program is run
 */
-static void	strtolist(char *tmp, node *head)
+static void	strtolist(char *tmp, node **head)
 {
 	size_t	i;
 	char	*start;
@@ -28,13 +28,14 @@ static void	strtolist(char *tmp, node *head)
 	node	*now;
 
 	start = tmp;
-	head = createlst(head);
-	now = head;
+	*head = createlst(*head);
+	now = *head;
 	while (*tmp)
 	{
 		i = strichr(tmp, '\n');
 		now->s = ft_strsub(tmp, 0, i);
-		(i + 1 <= strlen(tmp)) ? tmp += i + 1 : 0;
+		//printf("%s", now->s);
+		(i + 1 <= ft_strlen(tmp)) ? tmp += i + 1 : 0;
 		new = createlst(new);
 		now->next = new;
 		now = now->next;
@@ -44,15 +45,14 @@ static void	strtolist(char *tmp, node *head)
 }
 
 //this should dequeue
-static node	*dequeue(char **line, node *head)
+static void	*dequeue(char **line, node **head)
 {
 	node *ptr;
 
 	ptr = NULL;
-	*line = head->s;
-	ptr = head->next;
-	free(head);
-	return (ptr);
+	*line = (*head)->s;
+	*head = (*head)->next;
+	free(ptr);
 }
 /*
 int		main(void)
@@ -83,13 +83,14 @@ int		get_next_line(int fd, char **line)
 	
 	if (fd < 0 || fd > MAX_FD || !line || (read(fd, 0, 0) < 0))
 		return (-1);
-	if (!(tmp = (char *)malloc(sizeof(char) * (1))))
-		return (-1);
-	ft_bzero(tmp, 1);
+	tmp = ft_strdup("");
+	//if (!(tmp = (char *)malloc(sizeof(char) * (1))))	// tmp = ftstrdup("");
+	//	return (-1);
+	//ft_bzero(tmp, 1);
 	if (!heads[fd])
 	{
 		//taking the whole string.
-		while ((size = read(fd, buff, BUFF_SIZE)) > 0)
+		while ((size = read(fd, buff, BUFF_SIZE)) >= 0)
 		{
 			buff[size] = '\0';
 			tmp = ft_combine(tmp, buff);
@@ -99,22 +100,32 @@ int		get_next_line(int fd, char **line)
 		}
 		//function to separate into linked list
 		heads[fd] = createlst(heads[fd]);
-		strtolist(tmp, heads[fd]);
+		strtolist(tmp, &heads[fd]);
 	}
-	heads[fd] = dequeue(line, heads[fd]);
+	dequeue(line, &heads[fd]);
 	return ((heads[fd]->next == NULL) ? 0 : 1);
 }
 
+/*void	printlst(node *ptr)
+{
+	while (ptr)
+	{
+		printf("%s", ptr->s);
+		ptr = ptr->next;
+	}
+}*/
+/*
 int main(int argc, char **argv)
 {
     char *line;    
     int fd;
 
     fd = open(argv[1], O_RDONLY);
-    if ((get_next_line(fd, &line) > 0))
+    while (get_next_line(fd, &line) > 0)
     {
         printf("%s\n", line);
         free(line);
     }
     return (1);
 }
+*/
