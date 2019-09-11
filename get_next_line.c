@@ -2,9 +2,9 @@
 
 /*
 **	This function should return 3 things
-**		1.)	if '\n', return 1
-**		2.) if EOF, return 0
-**		3.) if error, return -1
+**		1.)	if '\n', return 1;
+**		2.) if EOF, return 0;
+**		3.) if error, return -1;
 */
 
 //allocate for list
@@ -16,7 +16,10 @@ static node	*createlst(node *ptr)
 	return (ptr);
 }
 
-// converting string to list
+/*
+**	converting string to list
+**	frees string after the program is run
+*/
 static void	strtolist(char *tmp, node *head)
 {
 	size_t	i;
@@ -46,12 +49,12 @@ static node	*dequeue(char **line, node *head)
 	node *ptr;
 
 	ptr = NULL;
-	ptr = head->next;
 	*line = head->s;
+	ptr = head->next;
 	free(head);
 	return (ptr);
 }
-
+/*
 int		main(void)
 {
 	char	*test_string = ft_strdup("asdn\nlkj\nasd;lfkja;l\n\nskdjf\n");
@@ -63,22 +66,22 @@ int		main(void)
 
 	while (ptr)
 	{
-		printf("\n\n\n*********************************\n");
 		printf("%s\n", ptr->s);
 		ptr = ptr->next;
-		printf("*********************************\n");
 	}
 	return (0);
 }
-/*
+*/
+
 int		get_next_line(int fd, char **line)
 {
 	static node *heads[MAX_FD];
 	char		buff[BUFF_SIZE];
 	char		*tmp;
 	size_t		size;
+	node		*ptr;
 	
-	if (fd < 0 || fd > MAXFD || !line || (read(fd, 0, 0) < 0))
+	if (fd < 0 || fd > MAX_FD || !line || (read(fd, 0, 0) < 0))
 		return (-1);
 	if (!(tmp = (char *)malloc(sizeof(char) * (1))))
 		return (-1);
@@ -94,12 +97,12 @@ int		get_next_line(int fd, char **line)
 			if (size == 0)
 				break;
 		}
-	//function to separate into linked list
-		strtolist(tmp, heads[65353]);
-		dequeue(line, heads[fd]);
+		//function to separate into linked list
+		heads[fd] = createlst(heads[fd]);
+		strtolist(tmp, heads[fd]);
 	}
 	heads[fd] = dequeue(line, heads[fd]);
-	return (heads[fd]->next == NULL ? 0 : 1);
+	return ((heads[fd]->next == NULL) ? 0 : 1);
 }
 
 int main(int argc, char **argv)
@@ -115,4 +118,3 @@ int main(int argc, char **argv)
     }
     return (1);
 }
-*/
