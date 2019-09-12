@@ -9,7 +9,7 @@
 # include <stdio.h>
 # include "libft/libft.h"
 
-# define BUFF_SIZE 1
+# define BUFF_SIZE 32
 # define GNL_MACRO char buff[BUFF_SIZE]; char *ret; size_t size; size_t schr;
 # define MAX_FD 65535
 

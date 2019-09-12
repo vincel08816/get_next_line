@@ -45,11 +45,11 @@ static void	strtolist(char *tmp, node **head)
 }
 
 //this should dequeue
-static void	*dequeue(char **line, node **head)
+static void	dequeue(char **line, node **head)
 {
 	node *ptr;
 
-	ptr = NULL;
+	ptr = *head;
 	*line = (*head)->s;
 	*head = (*head)->next;
 	free(ptr);
@@ -78,32 +78,25 @@ int		get_next_line(int fd, char **line)
 	static node *heads[MAX_FD];
 	char		buff[BUFF_SIZE];
 	char		*tmp;
-	size_t		size;
-	node		*ptr;
+	int			size;
 	
+	size = -42;
 	if (fd < 0 || fd > MAX_FD || !line || (read(fd, 0, 0) < 0))
 		return (-1);
 	tmp = ft_strdup("");
-	//if (!(tmp = (char *)malloc(sizeof(char) * (1))))	// tmp = ftstrdup("");
-	//	return (-1);
-	//ft_bzero(tmp, 1);
 	if (!heads[fd])
 	{
-		//taking the whole string.
-		while ((size = read(fd, buff, BUFF_SIZE)) >= 0)
+		while ((size = read(fd, buff, BUFF_SIZE)) > 0)
 		{
 			buff[size] = '\0';
 			tmp = ft_combine(tmp, buff);
 			ft_bzero(buff, BUFF_SIZE);
-			if (size == 0)
-				break;
 		}
-		//function to separate into linked list
-		heads[fd] = createlst(heads[fd]);
 		strtolist(tmp, &heads[fd]);
 	}
-	dequeue(line, &heads[fd]);
-	return ((heads[fd]->next == NULL) ? 0 : 1);
+	(size == -42) ? free(tmp): 0;
+	heads[fd] ? dequeue(line, &heads[fd]) : 0;
+	return (!heads[fd] ? 0 : 1);
 }
 
 /*void	printlst(node *ptr)
@@ -126,6 +119,6 @@ int main(int argc, char **argv)
         printf("%s\n", line);
         free(line);
     }
-    return (1);
+    return (0);
 }
 */
