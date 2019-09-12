@@ -23,7 +23,6 @@ typedef struct		s_list
 {
 	void			*content;
 	size_t			content_size;
-	struct s_list	*next;
 }					t_list;
 
 void				*ft_memset(void *ptr, int value, size_t num);
@@ -91,7 +90,6 @@ size_t				word_len(char const *s, char c);
 int					count_digits(int i);
 void				ft_swap(int *a, int *b);
 char				*char_remalloc(char *s, size_t n);
-char				*ft_combine(char *sum, char *append);
 size_t				strichr(char *s, char c);
 
 #endif

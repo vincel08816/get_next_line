@@ -43,6 +43,14 @@ static void	strtolist(char *tmp, node **head)
 	}
 	free(start);	//hopefully this will free it
 }
+static void	ft_combine(char **tmp, char *buff)
+{
+	char	*del;
+
+	del = *tmp;
+	*tmp = ft_strjoin(*tmp, buff);
+	free(del);
+}
 
 //this should dequeue
 static void	dequeue(char **line, node **head)
@@ -89,7 +97,7 @@ int		get_next_line(int fd, char **line)
 		while ((size = read(fd, buff, BUFF_SIZE)) > 0)
 		{
 			buff[size] = '\0';
-			tmp = ft_combine(tmp, buff);
+			ft_combine(tmp, buff);
 			ft_bzero(buff, BUFF_SIZE);
 		}
 		strtolist(tmp, &heads[fd]);
@@ -120,5 +128,4 @@ int main(int argc, char **argv)
         free(line);
     }
     return (0);
-}
-*/
+}*/
