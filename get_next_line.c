@@ -6,7 +6,7 @@
 /*   By: vilee <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/13 21:52:06 by vilee             #+#    #+#             */
-/*   Updated: 2019/09/13 21:52:35 by vilee            ###   ########.fr       */
+/*   Updated: 2019/09/14 10:22:00 by vilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void		ft_combine(char **tmp, char *buff)
 
 	del = *tmp;
 	*tmp = ft_strjoin(*tmp, buff);
-	free(del);
+	//free(del);
 }
 
 static int		reject_line(int size, char **line, char **tmp, char **s)
@@ -52,17 +52,19 @@ static int		reject_line(int size, char **line, char **tmp, char **s)
 	*tmp += i + 1;
 	if (**tmp != '\0' || **tmp != '\n')
 		*s = ft_strdup(*tmp);
-	free(start);
+	ft_strdel(&start);
 	return (1);
-}
+}ß
 
 int				get_next_line(int fd, char **line)
 {
 	static char *s[MAX_FD];
 	char		buff[BUFF_SIZE + 1];
 	char		*tmp;
+	char		*tmp2;
 	int			size;
 
+	tmp2 = NULL;
 	size = 1;
 	if (fd < 0 || fd > MAX_FD || !line || (read(fd, 0, 0) < 0))
 		return (-1);
@@ -74,16 +76,21 @@ int				get_next_line(int fd, char **line)
 	while ((size = read(fd, buff, BUFF_SIZE)) > 0)
 	{
 		buff[size] = '\0';
+		//tmp2 = tmp;
 		ft_combine(&tmp, buff);
+		//tmp = ft_strjoin(tmp, buff);
+		//free(tmp2);
 		if (strichr(buff, '\n') < ft_strlen(buff))
 			break ;
 	}
 	if (!s[fd])
 		return (reject_line(1, line, &tmp, &s[fd]));
-	(ft_strcmp(tmp, "")) ? size++ : 0;//free(tmp) : 0;
+	(ft_strcmp(tmp, "")) ? size++ : 0;
+	size == 0 ? ft_strdel(&tmp) : 0;
 	return (reject_line(size, line, &tmp, &s[fd]));
 }
 /*
+#include <stdio.h>
 int main(int argc, char **argv)
 {
     char *line;
