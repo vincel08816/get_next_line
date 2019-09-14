@@ -6,7 +6,7 @@
 /*   By: vilee <marvin@42.fr>                       +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/05 10:55:52 by vilee             #+#    #+#             */
-/*   Updated: 2019/09/05 10:55:54 by vilee            ###   ########.fr       */
+/*   Updated: 2019/09/14 10:12:03 by vilee            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ typedef struct		s_list
 {
 	void			*content;
 	size_t			content_size;
+	struct s_list	*next;
 }					t_list;
 
 void				*ft_memset(void *ptr, int value, size_t num);

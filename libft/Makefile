@@ -6,7 +6,7 @@
 #    By: vilee <marvin@42.fr>                       +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/16 15:10:22 by vilee             #+#    #+#              #
-#    Updated: 2019/08/16 15:10:25 by vilee            ###   ########.fr        #
+#    Updated: 2019/09/14 10:10:50 by vilee            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -75,8 +75,7 @@ SRCS =  absolute_value.c \
 		ft_lstiter.c \
 		ft_lstmap.c \
 		ft_lstnew.c \
-		count_digits.c \
-		strichr.c
+		count_digits.c 
 
 OSRCS = $(SRCS:.c=.o)
 
