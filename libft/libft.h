@@ -90,6 +90,5 @@ size_t				word_len(char const *s, char c);
 int					count_digits(int i);
 void				ft_swap(int *a, int *b);
 char				*char_remalloc(char *s, size_t n);
-size_t				strichr(char *s, char c);
 
 #endif
