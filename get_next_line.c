@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: vilee <marvin@42.fr>                       +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2019/09/13 21:52:06 by vilee             #+#    #+#             */
+/*   Updated: 2019/09/13 21:52:35 by vilee            ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 /*
@@ -7,43 +19,17 @@
 **		3.) if error, return -1;
 */
 
-//allocate for list
-static node	*createlst(node *ptr)
+static size_t	strichr(char *s, char c)
 {
-	if(!(ptr = (node*)malloc(sizeof(node))))
-		return (NULL);
-	ptr->next = NULL;
-	return (ptr);
+	int		i;
+
+	i = 0;
+	while (s[i] && s[i] != c)
+		i++;
+	return (i);
 }
 
-/*
-**	converting string to list
-**	frees string after the program is run
-*/
-static void	strtolist(char *tmp, node **head)
-{
-	size_t	i;
-	char	*start;
-	node	*new;
-	node	*now;
-
-	start = tmp;
-	*head = createlst(*head);
-	now = *head;
-	while (*tmp)
-	{
-		i = strichr(tmp, '\n');
-		now->s = ft_strsub(tmp, 0, i);
-		//printf("%s", now->s);
-		(i + 1 <= ft_strlen(tmp)) ? tmp += i + 1 : 0;
-		new = createlst(new);
-		now->next = new;
-		now = now->next;
-		new = NULL;
-	}
-	free(start);	//hopefully this will free it
-}
-static void	ft_combine(char **tmp, char *buff)
+static void		ft_combine(char **tmp, char *buff)
 {
 	char	*del;
 
@@ -52,73 +38,55 @@ static void	ft_combine(char **tmp, char *buff)
 	free(del);
 }
 
-//this should dequeue
-static void	dequeue(char **line, node **head)
+static int		reject_line(int size, char **line, char **tmp, char **s)
 {
-	node *ptr;
+	size_t	i;
+	char	*start;
 
-	ptr = *head;
-	*line = (*head)->s;
-	*head = (*head)->next;
-	free(ptr);
+	if (!size)
+		return (0);
+	i = 0;
+	start = *tmp;
+	i = strichr(*tmp, '\n');
+	*line = ft_strsub(*tmp, 0, i);
+	*tmp += i + 1;
+	if (**tmp != '\0' || **tmp != '\n')
+		*s = ft_strdup(*tmp);
+	free(start);
+	return (1);
 }
-/*
-int		main(void)
+
+int				get_next_line(int fd, char **line)
 {
-	char	*test_string = ft_strdup("asdn\nlkj\nasd;lfkja;l\n\nskdjf\n");
-	node	*ptr;
-
-	ptr = NULL;
-	//printf("test_string: %s", test_string);
-	strtolist(test_string, ptr);
-
-	while (ptr)
-	{
-		printf("%s\n", ptr->s);
-		ptr = ptr->next;
-	}
-	return (0);
-}
-*/
-
-int		get_next_line(int fd, char **line)
-{
-	static node *heads[MAX_FD];
-	char		buff[BUFF_SIZE];
+	static char *s[MAX_FD];
+	char		buff[BUFF_SIZE + 1];
 	char		*tmp;
 	int			size;
-	
-	size = -42;
+
+	size = 1;
 	if (fd < 0 || fd > MAX_FD || !line || (read(fd, 0, 0) < 0))
 		return (-1);
 	tmp = ft_strdup("");
-	if (!heads[fd])
+	s[fd] ? ft_combine(&tmp, s[fd]) : 0;
+	s[fd] ? free(s[fd]) : 0;
+	if (strichr(tmp, '\n') < ft_strlen(tmp))
+		return (reject_line(size, line, &tmp, &s[fd]));
+	while ((size = read(fd, buff, BUFF_SIZE)) > 0)
 	{
-		while ((size = read(fd, buff, BUFF_SIZE)) > 0)
-		{
-			buff[size] = '\0';
-			ft_combine(tmp, buff);
-			ft_bzero(buff, BUFF_SIZE);
-		}
-		strtolist(tmp, &heads[fd]);
+		buff[size] = '\0';
+		ft_combine(&tmp, buff);
+		if (strichr(buff, '\n') < ft_strlen(buff))
+			break ;
 	}
-	(size == -42) ? free(tmp): 0;
-	heads[fd] ? dequeue(line, &heads[fd]) : 0;
-	return (!heads[fd] ? 0 : 1);
+	if (!s[fd])
+		return (reject_line(1, line, &tmp, &s[fd]));
+	(ft_strcmp(tmp, "")) ? size++ : 0;//free(tmp) : 0;
+	return (reject_line(size, line, &tmp, &s[fd]));
 }
-
-/*void	printlst(node *ptr)
-{
-	while (ptr)
-	{
-		printf("%s", ptr->s);
-		ptr = ptr->next;
-	}
-}*/
 /*
 int main(int argc, char **argv)
 {
-    char *line;    
+    char *line;
     int fd;
 
     fd = open(argv[1], O_RDONLY);
@@ -128,4 +96,5 @@ int main(int argc, char **argv)
         free(line);
     }
     return (0);
-}*/
+}
+*/
